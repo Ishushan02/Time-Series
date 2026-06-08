@@ -29,5 +29,5 @@ trend equation: b_t = beta * (l_t - l_(t-1)) + (1 - beta) * phi * b_(t-1)
 phi = (0, 1)
 
 Keytakeaway
-- Holt's Linear Trend model adds trend as well as level exponential smothing.
+- Holt's Linear Trend model adds trend as well as level exponential smothing. (but not seasonality)
 
