@@ -106,3 +106,9 @@ Datasets: HYPE Dataset from Germany, EVAL Data, LIANG Data
 
 Quality Assessment
 ![alt text](Images/qualityAssessment.png)
+
+
+in PPG: The length between 2 peaks helps in finding Normal rhythm or Arrhythmia.
+![alt text](Images/arrythmia.png)
+
+Other Applications: Atrial Fibrillation, Fitness Tracker, Influenza like illness, Blood Pressure(but not validated yet.), 
