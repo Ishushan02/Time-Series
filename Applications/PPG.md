@@ -112,3 +112,145 @@ in PPG: The length between 2 peaks helps in finding Normal rhythm or Arrhythmia.
 ![alt text](Images/arrythmia.png)
 
 Other Applications: Atrial Fibrillation, Fitness Tracker, Influenza like illness, Blood Pressure(but not validated yet.), 
+
+
+# ECG and everything about it
+
+An Electrocardiogram (ECG) records the electrical activity of the heart.
+
+## ECG Diagram
+
+```text
+Voltage
+  ^
+  |
+  |          R
+  |         /\
+  |        /  \
+  |   P   /    \   T
+  |  /\  /      \ /\
+  | /  \/        V  \
+  |/    Q        S   \____
+  +---------------------------------> Time
+```
+
+## PQRST Components
+
+### P Wave
+- Represents atrial depolarization.
+- Atria contract and push blood into ventricles.
+
+```text
+   P
+  /\
+ /  \
+```
+
+---
+
+### Q Wave
+- First negative deflection before R.
+- Beginning of ventricular depolarization.
+
+```text
+ \
+  \ Q
+```
+
+---
+
+### R Wave
+- Tallest positive peak.
+- Main ventricular depolarization.
+- Most prominent feature in ECG.
+
+```text
+   R
+  /\
+ /  \
+```
+
+---
+
+### S Wave
+- Negative deflection after R.
+- Final stage of ventricular depolarization.
+
+```text
+     /
+    /
+ S /
+```
+
+---
+
+### T Wave
+- Ventricular repolarization.
+- Ventricles recover electrically for the next heartbeat.
+
+```text
+   T
+  /\
+ /  \
+```
+
+---
+
+## Complete Cardiac Cycle
+
+```text
+P        Q R S        T
+/\      \/\/\       /\
+  \____/    \_____/  \____
+
+|---- Atria Contract ----|
+
+        |--- Ventricles Contract ---|
+
+                       |-- Recovery --|
+```
+
+---
+
+## R-Peaks
+
+The R-peak is the highest point in the ECG waveform.
+
+```text
+      R
+     /\
+    /  \
+```
+
+R-peaks are used to calculate heart rate.
+
+### RR Interval
+
+```text
+      R1               R2
+      /\               /\
+     /  \             /  \
+----/----\-----------/----\------
+
+     <--- RR Interval --->
+```
+
+### Heart Rate Formula
+
+Heart Rate (BPM):
+
+HR = 60 / (R2 - R1) #RR_interval(seconds)
+
+Example:
+
+- RR interval = 0.8 sec
+- HR = 60 / 0.8 = 75 BPM
+
+---
+
+## Why R-Peaks Matter in the PPG Dataset
+
+- ECG provides accurate heartbeat locations.
+- R-peaks are detected from ECG.
+- Ground-truth heart rate labels are computed from these R-peaks.
+- PPG models learn to estimate the same heart rate using wrist sensor data.
