@@ -575,6 +575,28 @@ returns:
 ```
 
 ---
+Small Critical Info of Dataset
+
+BVP       shape (589568, 1)   sampled at 64 Hz
+activity  shape (36848, 1)    sampled at 4 Hz
+label     shape (4603,)       sampled at 0.5 Hz, one label every 2 seconds
+
+The lineup Time
+589568 / 64   = 9212 seconds
+36848 / 4     = 9212 seconds
+4603 / 0.5    = 9206 seconds approximately
+
+So they are all describing about the same session, just at different resolutions.
+BVP is dense because it records blood volume pulse 64 times per second.
+activity is slower, only 4 samples per second.
+label is much slower: one ground-truth heart-rate label about every 2 seconds.
+To compare them, you usually resample or aggregate them to the same timeline. For example, if predicting label from BVP, each label corresponds to roughly:
+
+64 * 2 = 128 BVP samples
+bvp_window = bvp[i * 128 : (i + 1) * 128]
+target_hr = labels[i]
+
+---
 
 # 18. Machine Learning View
 
