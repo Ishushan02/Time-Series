@@ -65,5 +65,3 @@ The fifth method is a 1D U Net. It uses an encoder decoder structure with skip c
 The sixth method is DPNet with bidirectional Mamba style selective state space blocks. This architecture processes the signal forward and backward through sequence modeling layers and blends the model output with the original noisy input using a learnable weighted residual. It is designed to model temporal structure in the PPG window while still retaining useful information from the measured signal.
 
 The artifact removal comparison places the classical DSP method, CycleGAN, FCGAN, VQVAE, 1D U Net, and DPNet under the same denoising objective. The neural methods share the same train, validation, and test split, use the same standardization strategy, and are evaluated on held out data using MSE and MAE. Together, this part of the project turns the repository from basic time series notes into an applied wearable signal processing study.
-
-![Traditional signal processing approach](SignalProcessing/Images/TraditionalApproach.png)
