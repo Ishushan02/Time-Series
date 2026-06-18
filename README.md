@@ -65,3 +65,29 @@ The fifth method is a 1D U Net. It uses an encoder decoder structure with skip c
 The sixth method is DPNet with bidirectional Mamba style selective state space blocks. This architecture processes the signal forward and backward through sequence modeling layers and blends the model output with the original noisy input using a learnable weighted residual. It is designed to model temporal structure in the PPG window while still retaining useful information from the measured signal.
 
 The artifact removal comparison places the classical DSP method, CycleGAN, FCGAN, VQVAE, 1D U Net, and DPNet under the same denoising objective. The neural methods share the same train, validation, and test split, use the same standardization strategy, and are evaluated on held out data using MSE and MAE. Together, this part of the project turns the repository from basic time series notes into an applied wearable signal processing study.
+
+## CGM — PPG-Based Glucose Estimation
+
+The `SignalProcessing/cgm.ipynb` notebook builds a continuous glucose monitoring pipeline that predicts blood glucose values directly from raw PPG signals using the public Mazandaran CGM dataset version 2.
+
+The dataset contains 67 PPG recordings from 23 participants sampled at 2175 Hz. Each recording is paired with one blood glucose reading measured at the time of the PPG capture.
+
+The preprocessing pipeline applies a fourth-order Butterworth band-pass filter from 0.5 Hz to 8 Hz to remove baseline drift and high-frequency noise. The filtered signal is then downsampled from 2175 Hz to 30 Hz using polyphase resampling, producing a 300-sample window per recording that corresponds to 10 seconds of PPG at 30 Hz.
+
+The dataset is split by participant ID using GroupShuffleSplit so that no subject appears in more than one of training, validation, and test. This produces 34 training recordings across 13 subjects, 16 validation recordings across 5 subjects, and 17 test recordings across 5 subjects. The subject-wise split gives a stricter estimate of how the model generalizes to unseen individuals.
+
+Training data is augmented by adding Gaussian noise at three standard deviation levels (0.005, 0.01, 0.02), expanding the 34 training recordings to 136 augmented examples. Validation and test signals are kept untouched. Global mean and standard deviation normalization is fitted on the augmented training set only and then applied to all three splits to avoid leakage.
+
+Three deep learning models are trained and compared for glucose regression.
+
+Model 1 is a basic 1D CNN with two convolutional blocks followed by global average pooling and a fully connected regression head. It acts as the baseline for the comparison.
+
+Model 2 is a Hybrid CNN-GRU. It runs three parallel branches on the same normalized PPG window. Branch one uses large convolutional kernels (sizes 15 and 7) to capture slow PPG envelope features. Branch two uses small convolutional kernels (sizes 5 and 3) to capture local pulse morphology details. Branch three is a two-layer GRU that models the sequential dynamics of the waveform. Each branch projects to a 64-dimensional embedding. The three embeddings are concatenated and passed through a dropout layer and a two-stage regression head.
+
+Model 3 is a CNN with Bidirectional GRU and Self-Attention. Three sequential convolutional blocks with kernel sizes 7, 5, and 3 extract features and reduce the sequence length from 300 to 37 time steps through MaxPool layers. A Dropout layer regularizes the CNN output before it is fed into a two-layer bidirectional GRU that processes temporal context in both forward and backward directions, producing 128-dimensional hidden states per time step. An additive self-attention layer computes a softmax-weighted sum across time steps to produce a single 128-dimensional context vector. A fully connected head with Dropout then maps this vector to the glucose prediction.
+
+All three models are trained with the AdamW optimizer using L1Loss (MAE) as the training criterion and early stopping based on validation MAE with a patience of 25 epochs.
+
+Evaluation uses four metrics on the held-out test set: MAE, RMSE, MAPE, and R squared. The Clarke Error Grid is also applied to each model to assess clinical safety by categorizing predictions into zones A through E based on how much a prediction error would affect a clinical treatment decision.
+
+A 10-fold cross-validation study is run across all three models using GroupKFold to ensure subject-level separation in every fold. Each fold trains from scratch with per-fold augmentation and per-fold normalization fitted only on the fold training data, then evaluates on the held-out fold test subjects. The cross-validation runs for a fixed 60 epochs per fold per model and reports MAE, RMSE, MAPE, and R squared for every fold. Results are summarized as mean and standard deviation across folds and visualized as side-by-side boxplots for all four metrics across the three models.
